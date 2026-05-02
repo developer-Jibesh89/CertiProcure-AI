@@ -4,7 +4,7 @@ function App() {
   return (
     <>
       <div>
-        <main className="flex-1 bg-white dark:bg-black p-6">
+        <main className="bg-white dark:bg-black">
           <Outlet />
         </main>
       </div>
