@@ -3,8 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     # The field names must match the keys in your .env file
     GOOGLE_API_KEY: str
-    
-    # Default values can be set here
+    BLOCKCHAIN_URL: str
     PROJECT_NAME: str = "CRPF Tender Auditor"
     API_V1_STR: str = "/api/v1"
     
