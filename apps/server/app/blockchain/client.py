@@ -67,6 +67,17 @@ class BlockchainAuditor:
             print(f"Blockchain anchoring failed: {str(e)}")
             return "ERROR_ANCHORING_FAILED"
 
+    def secure_report(self, report_data: dict) -> str:
+        """
+        Securely anchors a bidder report to the blockchain.
+        Returns the transaction hash for immutable record-keeping.
+        """
+        return self.record_on_chain(
+            bidder_id=report_data.get('bidder_name', 'unknown'),
+            data_to_hash=report_data,
+            event_type='bidder_evaluation'
+        )
+
     def verify_integrity(self, tx_hash: str, original_data: dict) -> bool:
         """
         Utility for the 'Auditor Suite' to verify that the current data 

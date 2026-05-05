@@ -55,17 +55,20 @@ async def evaluate_files(
     bidder_files: List[UploadFile] = File(...)
 ):
     # 1. Parse the Tender Document
-    tender_text = extract_text_from_file(tender_file)
+    tender_text = await extract_text_from_file(tender_file)
     
     # 2. Parse all Bidder Documents
     parsed_bidders = []
     for b_file in bidder_files:
-        bidder_text = extract_text_from_file(b_file)
+        bidder_text = await extract_text_from_file(b_file)
         parsed_bidders.append({
             "name": b_file.filename,
             "content": bidder_text
         })
     
+    print(f"Parsed Tender: {tender_text[:100]}...")  # Debug: Show snippet of tender
+    print(f"Parsed {len(parsed_bidders)} Bidders: {[b['name'] for b in parsed_bidders]}")  # Debug: List bidder names   
+
     # 3. Create a Job ID
     job_id = f"job_{len(results_db) + 1}"
     results_db[job_id] = {"status": "processing", "data": None}
