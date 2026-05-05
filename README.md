@@ -4,6 +4,10 @@
 
 ---
 
+## Requiements
+
+- Download Genache from [here](https://archive.trufflesuite.com/ganache/)
+
 ## Key Features
 
 *   **Agentic AI Reasoning:** Powered by **LangGraph** and **Gemini 3 Flash**, the system extracts mandatory clauses from complex tender PDFs and maps them against bidder evidence with transparent "Reasoning Paths"[cite: 1].
