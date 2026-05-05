@@ -6,7 +6,7 @@
 
 ## Requiements
 
-- Download Genache from [here](https://archive.trufflesuite.com/ganache/)
+- Download Ganache from [here](https://archive.trufflesuite.com/ganache/)
 
 ## Key Features
 
