@@ -1,5 +1,5 @@
-from agents.auditor import tender_app
-from core.database import results_db
+from app.agents.auditor import tender_app
+from app.core.database import results_db
 
 async def run_graph_audit(job_id, initial_state):
     final_output = tender_app.invoke(initial_state)

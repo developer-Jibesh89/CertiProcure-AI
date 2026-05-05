@@ -1,4 +1,4 @@
-from agents.auditor import tender_app
+from app.agents.auditor import tender_app
 
 # app/core/database.py
 results_db = {}

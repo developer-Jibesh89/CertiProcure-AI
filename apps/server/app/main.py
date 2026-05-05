@@ -6,15 +6,14 @@ from fastapi import (
 )
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
-from utils.parser import extract_text_from_file
-from blockchain.client import BlockchainAuditor
-from core.database import (
+from app.utils.parser import extract_text_from_file
+from app.blockchain.client import BlockchainAuditor
+from app.core.database import (
     results_db,
     run_agent
 )
 
-from core.schemas import TenderRequest
-from agents.worker import run_graph_audit
+from app.core.schemas import TenderRequest
 
 app = FastAPI(title="CRPF AI Tender Auditor")
 
@@ -79,7 +78,7 @@ async def evaluate_files(
             self.bidders = b
             
     request = MockRequest(tender_text, parsed_bidders)
-    background_tasks.add_task(run_agent, job_id, request)
+    background_tasks.add_task(run_agent, job_id, request, blockchain)
     
     return {"job_id": job_id, "message": f"Processing {len(bidder_files)} files..."}
 

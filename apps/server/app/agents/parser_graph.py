@@ -1,7 +1,6 @@
 import io
 import os
 from typing import TypedDict, Literal
-from fastapi import UploadFile
 
 # Specialized Libraries
 import pdfplumber

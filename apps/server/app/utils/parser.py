@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-from agents.parser_graph import parser_graph
+from app.agents.parser_graph import parser_graph
 
 # 5. The Public Interface (Used by main.py)
 async def extract_text_from_file(upload_file: UploadFile) -> str:
