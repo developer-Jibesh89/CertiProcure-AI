@@ -4,13 +4,21 @@ from fastapi import (
     File, 
     UploadFile
 )
-from pydantic import BaseModel
-from typing import List, Dict
-from app.agents.graph import tender_app
+from typing import List
 from fastapi.middleware.cors import CORSMiddleware
-from app.utils.helper import extract_text_from_file
+from app.utils.parser import extract_text_from_file
+from app.blockchain.client import BlockchainAuditor
+from app.core.database import (
+    results_db,
+    run_agent
+)
+
+from app.core.schemas import TenderRequest
 
 app = FastAPI(title="CRPF AI Tender Auditor")
+
+# Initialize the Ganache client
+blockchain = BlockchainAuditor()
 
 origins = [
     "http://localhost:3000", # Standard React port
@@ -26,19 +34,16 @@ app.add_middleware(
     allow_headers=["*"],               # Allow all headers (Content-Type, etc.)
 )
 
-class TenderRequest(BaseModel):
-    tender_text: str
-    bidders: List[Dict[str, str]]
+
 
 # In-memory store for demo purposes
-results_db = {}
 @app.post("/evaluate")
 async def start_evaluation(request: TenderRequest, background_tasks: BackgroundTasks):
     job_id = f"job_{len(results_db) + 1}"
     results_db[job_id] = {"status": "processing", "data": None}
     
     # Run the agent in the background
-    background_tasks.add_task(run_agent, job_id, request)
+    background_tasks.add_task(run_agent, job_id, request, blockchain)
     
     return {"job_id": job_id, "message": "Evaluation started"}
 
@@ -50,17 +55,20 @@ async def evaluate_files(
     bidder_files: List[UploadFile] = File(...)
 ):
     # 1. Parse the Tender Document
-    tender_text = extract_text_from_file(tender_file)
+    tender_text = await extract_text_from_file(tender_file)
     
     # 2. Parse all Bidder Documents
     parsed_bidders = []
     for b_file in bidder_files:
-        bidder_text = extract_text_from_file(b_file)
+        bidder_text = await extract_text_from_file(b_file)
         parsed_bidders.append({
             "name": b_file.filename,
             "content": bidder_text
         })
     
+    print(f"Parsed Tender: {tender_text[:100]}...")  # Debug: Show snippet of tender
+    print(f"Parsed {len(parsed_bidders)} Bidders: {[b['name'] for b in parsed_bidders]}")  # Debug: List bidder names   
+
     # 3. Create a Job ID
     job_id = f"job_{len(results_db) + 1}"
     results_db[job_id] = {"status": "processing", "data": None}
@@ -73,21 +81,11 @@ async def evaluate_files(
             self.bidders = b
             
     request = MockRequest(tender_text, parsed_bidders)
-    background_tasks.add_task(run_agent, job_id, request)
+    background_tasks.add_task(run_agent, job_id, request, blockchain)
     
     return {"job_id": job_id, "message": f"Processing {len(bidder_files)} files..."}
 
 
-async def run_agent(job_id: str, request: TenderRequest):
-    inputs = {
-        "tender_text": request.tender_text,
-        "bidders": request.bidders,
-        "criteria": [],
-        "reports": [],
-        "index": 0
-    }
-    final_state = tender_app.invoke(inputs)
-    results_db[job_id] = {"status": "completed", "reports": final_state["reports"]}
 
 @app.get("/status/{job_id}")
 async def get_status(job_id: str):

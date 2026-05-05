@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Upload, ShieldCheck, Activity, CheckCircle, 
-  AlertCircle, FileText, Search, Clock, ChevronRight, HardDrive
+  FileText, Search, Clock, HardDrive
 } from 'lucide-react';
 
 interface Evidence {
@@ -47,8 +47,10 @@ const TenderAuditor: React.FC = () => {
         const res = await fetch(`http://localhost:8000/status/${jobId}`);
         const data = await res.json();
         
+        console.log("Polling status:", data);
+
         if (data.status === 'completed') {
-          setReports(data.reports);
+          setReports(Array.isArray(data.data) ? data.data : []);
           setStatus('completed');
           setLogs(prev => [...prev, "Audit complete. Results secured on blockchain."]);
           clearInterval(interval);
@@ -224,7 +226,7 @@ const TenderAuditor: React.FC = () => {
                 </div>
               </div>
               <h2 className="text-2xl font-bold text-slate-800">Processing Audit</h2>
-              <p className="text-slate-500 mt-2">Gemini Flash 1.5 is cross-referencing documents...</p>
+              <p className="text-slate-500 mt-2">Gemini-3-Flash-Preview is cross-referencing documents...</p>
             </div>
           )}
 

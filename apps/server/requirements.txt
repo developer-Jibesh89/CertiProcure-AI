@@ -5,5 +5,8 @@ langchain-google-genai
 pydantic
 python-dotenv
 pydantic-settings
-python-multipart 
+python-multipart
 pdfplumber
+web3
+python-docx
+easyocr
