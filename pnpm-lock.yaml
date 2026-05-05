@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  apps/web:
+  apps/frontend:
     dependencies:
       lucide-react:
         specifier: ^1.14.0
